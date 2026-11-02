@@ -2,9 +2,10 @@
 console.log("app.js loaded");
 let ctx = null; // avoid the audio context refreshing
 let node = null;
-let source = null;
+let source = null; // for essentially whatever is playing into the engine
 
 
+// Start her up: audio setup and engine loading
 document.getElementById("Demo").addEventListener("click", async () => {
 if (ctx){ 
     console.log("Already started");
@@ -23,11 +24,15 @@ node.port.onmessage = (e) => {
 
 const response = await fetch("fretorgan.wasm")
 const bytes = await response.arrayBuffer
+// presets, menu, sliders
 const preset = Number(document.getElementById("preset").value);
-node.port.postMessage({type: "init", bytes: bytes, preset: preset, mix: 1, vol: 0});
+node.port.postMessage({type: "init", bytes: bytes, preset: preset, mix: mix, vol: vol});
 });
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// demo: loop guitar clip through the engine
 document.getElementById("Demo").addEventListener("click", async() => {
     if (!node) { console.log("press start first"); return; }
     stopSource();
@@ -41,7 +46,7 @@ document.getElementById("Demo").addEventListener("click", async() => {
     source.connect(node);
     source.start();
 });
-
+ // to shut up whatever is playing
 function stopSource(){
     if (source){
         source.stop();
@@ -59,3 +64,17 @@ document.getElementById("preset").addEventListener("change", (e) => {
     console.log("preset", preset);
     if (node) node.port.postMessage({ type: "preset", preset: preset});
 });
+
+// mix & vol sliders
+function sendMix(){
+    const mix = Number(document.getElementById("mix").value) / 100;
+    const vol = Number(document.getElementById("vol").value);
+
+    document.getElementById("mix-value").textContent = Math.round(mix * 100) + " %";
+    document.getElementById("vol-value").textContent = vol + " dB";
+
+    if (node) node.port.postMessage({type: "mix", mix: mix, vol: vol });
+}
+
+document.getElementById("mix").addEventListener("input", sendMix);
+document.getElementById("vol").addEventListener("input", sendMix);
