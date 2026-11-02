@@ -3,5 +3,6 @@ Guitar-to-Keyboard Live | C, JavaScript, WebAssembly| GitHub
   Ported the engine to the browser with WebAssembly, adding a JavaScript interface. 
 
   <img width="373" height="240" alt="image" src="https://github.com/user-attachments/assets/5685b3ed-26cd-4cfb-9cd5-9a5c2bf93dfe" />
+
 (work in progress)
 
